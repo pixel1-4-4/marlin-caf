@@ -516,24 +516,8 @@ static int smb2_usb_set_prop(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_PD_USB_SUSPEND_SUPPORTED:
 		chg->system_suspend_supported = val->intval;
 		break;
-	case POWER_SUPPLY_PROP_BOOST_CURRENT:
-		rc = smblib_set_prop_boost_current(chg, val);
-		break;
-	case POWER_SUPPLY_PROP_CTM_CURRENT_MAX:
-		rc = vote(chg->usb_icl_votable, CTM_VOTER,
-						val->intval >= 0, val->intval);
-		break;
-	case POWER_SUPPLY_PROP_PR_SWAP:
-		rc = smblib_set_prop_pr_swap_in_progress(chg, val);
-		break;
-	case POWER_SUPPLY_PROP_PD_VOLTAGE_MAX:
-		rc = smblib_set_prop_pd_voltage_max(chg, val);
-		break;
-	case POWER_SUPPLY_PROP_PD_VOLTAGE_MIN:
-		rc = smblib_set_prop_pd_voltage_min(chg, val);
-		break;
-	case POWER_SUPPLY_PROP_SDP_CURRENT_MAX:
-		rc = smblib_set_prop_sdp_current_max(chg, val);
+	case POWER_SUPPLY_PROP_PD_CC_OVERRIDE:
+		rc = smblib_set_prop_pd_cc_override(chg, val);
 		break;
 	default:
 		pr_err("set prop %d is not supported\n", psp);
