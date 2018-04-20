@@ -2353,7 +2353,7 @@ int smblib_get_prop_typec_power_role(struct smb_charger *chg,
 				     union power_supply_propval *val)
 {
 	int rc = 0;
-	u8 ctrl;
+	u8 ctrl, isrc;
 
 	rc = smblib_read(chg, TYPE_C_INTRPT_ENB_SOFTWARE_CTRL_REG, &ctrl);
 	if (rc < 0) {
@@ -2363,6 +2363,12 @@ int smblib_get_prop_typec_power_role(struct smb_charger *chg,
 	}
 	smblib_dbg(chg, PR_REGISTER, "TYPE_C_INTRPT_ENB_SOFTWARE_CTRL = 0x%02x\n",
 		   ctrl);
+
+	rc = smblib_read(chg, TYPE_C_CFG_2_REG, &isrc);
+	if (rc < 0) {
+		smblib_err(chg, "Couldn't read TYPE_C_CFG_2_REG rc=%d\n", rc);
+		return rc;
+	}
 
 	if (ctrl & TYPEC_DISABLE_CMD_BIT) {
 		val->intval = POWER_SUPPLY_TYPEC_PR_NONE;
@@ -2374,7 +2380,9 @@ int smblib_get_prop_typec_power_role(struct smb_charger *chg,
 		val->intval = POWER_SUPPLY_TYPEC_PR_DUAL;
 		break;
 	case DFP_EN_CMD_BIT:
-		val->intval = POWER_SUPPLY_TYPEC_PR_SOURCE;
+		val->intval = isrc & EN_80UA_180UA_CUR_SOURCE_BIT ?
+			POWER_SUPPLY_TYPEC_PR_SOURCE_1_5 :
+			POWER_SUPPLY_TYPEC_PR_SOURCE;
 		break;
 	case UFP_EN_CMD_BIT:
 		val->intval = POWER_SUPPLY_TYPEC_PR_SINK;
@@ -2619,7 +2627,8 @@ int smblib_set_prop_typec_power_role(struct smb_charger *chg,
 		power_role = UFP_EN_CMD_BIT;
 		break;
 	case POWER_SUPPLY_TYPEC_PR_SOURCE:
-		power_role = DFP_EN_CMD_BIT;
+	case POWER_SUPPLY_TYPEC_PR_SOURCE_1_5:
+		reg = DFP_EN_CMD_BIT;
 		break;
 	default:
 		smblib_err(chg, "power role %d not supported\n", val->intval);
@@ -2643,6 +2652,14 @@ int smblib_set_prop_typec_power_role(struct smb_charger *chg,
 			}
 		}
 	}
+
+	rc = smblib_masked_write(chg, TYPE_C_CFG_2_REG,
+				 EN_80UA_180UA_CUR_SOURCE_BIT,
+				 pr_role == POWER_SUPPLY_TYPEC_PR_SOURCE_1_5
+				 ? EN_80UA_180UA_CUR_SOURCE_BIT : 0);
+
+	if (rc < 0)
+		smblib_err(chg, "Couldnt update EN_ISRC_180UA_BIT rc=%d\n", rc);
 
 	rc = smblib_masked_write(chg, TYPE_C_INTRPT_ENB_SOFTWARE_CTRL_REG,
 				 TYPEC_POWER_ROLE_CMD_MASK, power_role);
