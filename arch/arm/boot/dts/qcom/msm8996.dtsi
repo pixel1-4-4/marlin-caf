@@ -176,13 +176,6 @@
 
 	soc: soc { };
 
-	vendor: vendor {
-		#address-cells = <1>;
-		#size-cells = <1>;
-		ranges = <0 0 0 0xffffffff>;
-		compatible = "simple-bus";
-	};
-
 	firmware: firmware {
 		android {
 			compatible = "android,firmware";
@@ -192,7 +185,7 @@
 			};
 			fstab {
 				compatible = "android,fstab";
-				android_vendor: vendor {
+				vendor: vendor {
 					compatible = "android,vendor";
 					dev = "/dev/block/platform/soc/7464900.sdhci/by-name/vendor";
 					type = "ext4";
@@ -204,7 +197,7 @@
 		};
 	};
 
-	reserved_memory: reserved-memory {
+	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
