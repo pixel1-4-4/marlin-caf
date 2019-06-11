@@ -77,9 +77,9 @@ struct pd_phy_params {
 
 #if IS_ENABLED(CONFIG_QPNP_USB_PDPHY)
 int pd_phy_open(struct pd_phy_params *params);
-int pd_phy_signal(enum pd_sig_type sig);
+int pd_phy_signal(enum pd_sig_type sig, unsigned int timeout_ms);
 int pd_phy_write(u16 hdr, const u8 *data, size_t data_len,
-		enum pd_sop_type sop);
+	enum pd_sop_type sop, unsigned int timeout_ms);
 int pd_phy_update_roles(enum data_role dr, enum power_role pr);
 void pd_phy_close(void);
 #else
@@ -88,13 +88,13 @@ static inline int pd_phy_open(struct pd_phy_params *params)
 	return -ENODEV;
 }
 
-static inline int pd_phy_signal(enum pd_sig_type type)
+static inline int pd_phy_signal(enum pd_sig_type type, unsigned int timeout_ms)
 {
 	return -ENODEV;
 }
 
 static inline int pd_phy_write(u16 hdr, const u8 *data, size_t data_len,
-		enum pd_sop_type sop)
+	enum pd_sop_type sop, unsigned int timeout_ms)
 {
 	return -ENODEV;
 }
