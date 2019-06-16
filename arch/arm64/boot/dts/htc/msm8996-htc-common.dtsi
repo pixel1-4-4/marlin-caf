@@ -12,63 +12,60 @@
 	reg = <0 0xc0001000 0 0x31ff000>;
 };
 
-/ {
+&reserved_memory {
+	htc_reserve_region: htc_reserve_region@0 {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
 
-        reserved-memory {
-		htc_reserve_region: htc_reserve_region@0 {
-			#address-cells = <2>;
-			#size-cells = <2>;
-			ranges;
-
-			htc_reserve1_mem: htc_reserve1_region@0 {
-				compatible = "removed-dma-pool";
-				no-map;
-				reg = <0 0x83600000 0 0x00100000>;
-			};
-			msm_rtb_mem: msm_rtb_region@0 {
-				compatible = "removed-dma-pool";
-				no-map;
-				reg = <0 0x83700000 0 0x00100000>;
-			};
-			htc_reserve2_mem: htc_reserve2_region@0 {
-				compatible = "removed-dma-pool";
-				no-map;
-				reg = <0 0x83800000 0 0x00800000>;
-			};
-		};
-
-                htc_rtel_mem: htc_rtel_region@0 {
-                        compatible = "shared-dma-pool";
-                        reusable;
-                        reg = <0 0x84000000 0 0x1400000>; /* 20 MB */
-                };
-
-		ramoops_mem: ramoops_region@0 {
+		htc_reserve1_mem: htc_reserve1_region@0 {
 			compatible = "removed-dma-pool";
 			no-map;
-			reg = <0 0x83500000 0 0x00100000>;
+			reg = <0 0x83600000 0 0x00100000>;
+		};
+		msm_rtb_mem: msm_rtb_region@0 {
+			compatible = "removed-dma-pool";
+			no-map;
+			reg = <0 0x83700000 0 0x00100000>;
+		};
+		htc_reserve2_mem: htc_reserve2_region@0 {
+			compatible = "removed-dma-pool";
+			no-map;
+			reg = <0 0x83800000 0 0x00800000>;
 		};
 	};
 
-	firmware {
-		android {
-			compatible = "android,firmware";
-			fstab {
-				compatible = "android,fstab";
-				vendor {
-					compatible = "android,vendor";
-					dev = "/dev/block/platform/soc/624000.ufshc/by-name/vendor";
-					type = "ext4";
-					mnt_flags = "ro,barrier=1";
-					fsmgr_flags = "wait,slotselect,verify";
-				};
-				persist {
-					compatible = "android,persist";
-					dev = "/dev/block/platform/soc/624000.ufshc/by-name/persist";
-					type = "ext4";
-					mnt_flags = "nosuid,nodev,noatime,barrier=1";
-					fsmgr_flags = "wait";
-				};
+        htc_rtel_mem: htc_rtel_region@0 {
+                compatible = "shared-dma-pool";
+                reusable;
+                reg = <0 0x84000000 0 0x1400000>; /* 20 MB */
+        };
+
+	ramoops_mem: ramoops_region@0 {
+		compatible = "removed-dma-pool";
+		no-map;
+		reg = <0 0x83500000 0 0x00100000>;
+	};
+};
+
+&firmware {
+	android {
+		compatible = "android,firmware";
+		fstab {
+			compatible = "android,fstab";
+			vendor {
+				compatible = "android,vendor";
+				dev = "/dev/block/platform/soc/624000.ufshc/by-name/vendor";
+				type = "ext4";
+				mnt_flags = "ro,barrier=1";
+				fsmgr_flags = "wait,slotselect,verify";
+			};
+			persist {
+				compatible = "android,persist";
+				dev = "/dev/block/platform/soc/624000.ufshc/by-name/persist";
+				type = "ext4";
+				mnt_flags = "nosuid,nodev,noatime,barrier=1";
+				fsmgr_flags = "wait";
 			};
 		};
 	};
